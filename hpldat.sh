@@ -29,9 +29,19 @@ create_sjob () {
   if [[ ! -d "scripts/$nodes/$scale" ]]; then
     mkdir scripts/$nodes/$scale
   fi
+  if [[ ! -d "results" ]]; then
+    mkdir results
+  fi
+  if [[ ! -d "results/$nodes" ]]; then
+    mkdir results/$nodes
+  fi
+  if [[ ! -d "results/$nodes/$scale" ]]; then
+    mkdir results/$nodes/$scale
+  fi
   cd scripts/$nodes/$scale
   touch hpl-$core.sjob
   echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$core.sjob
+  echo "#SBATCH -o $hplbinpathvar/results/$nodes/$scale/hpl-$core.out"
   echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$core.sjob
   echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
   echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$core.sjob
