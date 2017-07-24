@@ -20,16 +20,22 @@ cd $core
 }
 create_sjob () {
   cd $hplbinpathvar
-  if [[ ! -d "$scripts" ]]; then
-    mkdir $scripts
+  if [[ ! -d "scripts" ]]; then
+    mkdir scripts
   fi
-  cd scripts
-  touch hpl-$scale-$1-$core.sjob
-  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$scale-$1-$core.sjob
-  echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$scale-$1-$core.sjob
-  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$scale-$1-$core.sjob
-  echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$scale-$1-$core.sjob
-  echo "mpirun -n $core ./xhpl"  >> hpl-$scale-$1-$core.sjob
+  if [[ ! -d "$nodes" ]]; then
+    mkdir $nodes
+  fi
+  if [[ ! -d "$scale" ]]; then
+    mkdir $scale
+  fi
+  cd scripts/$nodes/$scale
+  touch hpl-$core.sjob
+  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$core.sjob
+  echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$core.sjob
+  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
+  echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$core.sjob
+  echo "mpirun -n $core ./xhpl"  >> hpl-$core.sjob
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
