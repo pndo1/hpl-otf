@@ -2,6 +2,23 @@
 
 echo "Ryan's fancy script to scale HPL.dat on the fly"
 
+create_hpl () {
+cd $hplpathvar/..
+hplfolder=$(ls | grep -i intel)
+cp -r $hplfolder $hplbinpathvar
+cd $hplbinpathvar/
+if [[ ! -d "$nodes" ]]; then
+  mkdir $nodes
+fi
+if [[ ! -d "$nodes/$scale" ]]; then
+  mkdir $nodes/$scale
+fi
+if [[ ! -d "$nodes/$scale/$core" ]]; then
+  mkdir $nodes/$scale/$core
+fi
+mv $hplfolder $nodes/$scale/$core
+}
+
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
 export nodes=$(grep -Eowi 'single|many' <<< "$*")
 export ns=$(grep -Eiw Ns=* <<< "$*")
@@ -27,17 +44,7 @@ elif [[ ! -z "$hplbinpathread" ]]; then
   export hplbinpathvar=$hplbinpathread
 fi
 
-cd $hplpathvar/..
-hplfolder=$(ls | grep -i intel)
-cp -r $hplfolder $hplbinpathvar
-cd $hplbinpathvar/
-if [[ ! -d "$nodes" ]]; then
-  mkdir $nodes
+if [[ "$nodes" == "single" ]]; then
+  export cores='1 2 4 6 12 24 48'
+
 fi
-if [[ ! -d "$nodes/$scale" ]]; then
-  mkdir $nodes/$scale
-fi
-if [[ ! -d "$nodes/$scale/$core" ]]; then
-  mkdir $nodes/$scale/$core
-fi
-mv $hplfolder $nodes/$scale/$core
