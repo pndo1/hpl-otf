@@ -25,7 +25,7 @@ create_sjob () {
   echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$scale-$1-$core.sjob
   echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$scale-$1-$core.sjob
   echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$scale-$1-$core.sjob
-  echo "cd $hplbinpathvar/$1/$scale/$core"  >> hpl-$scale-$1-$core.sjob
+  echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$scale-$1-$core.sjob
   echo "mpirun -n $core ./xhpl"  >> hpl-$scale-$1-$core.sjob
 }
 
@@ -58,7 +58,7 @@ if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
 for core in $cores; do
   create_hpl
-  cd $hplfolder $1/$scale
+  cd $hplfolder $nodes/$scale
   mv $hplfolder $core
   cd $core
   if [[ "$core" == "1" ]]; then
