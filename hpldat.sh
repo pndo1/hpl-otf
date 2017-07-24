@@ -7,13 +7,13 @@ cd $hplpathvar/..
 hplfolder=$(ls | grep -i intel)
 cp -r $hplfolder $hplbinpathvar
 cd $hplbinpathvar/
-if [[ ! -d "$1" ]]; then
-  mkdir $1
+if [[ ! -d "$nodes" ]]; then
+  mkdir $nodes
 fi
-if [[ ! -d "$1/$scale" ]]; then
-  mkdir $1/$scale
+if [[ ! -d "$nodes/$scale" ]]; then
+  mkdir $nodes/$scale
 fi
-mv $hplfolder $1/$scale
+mv $hplfolder $nodes/$scale
 }
 create_sjob () {
   cd $hplbinpathvar
@@ -21,20 +21,20 @@ create_sjob () {
     mkdir $scripts
   fi
   cd scripts
-  touch hpl-$1-$scale-$core.sjob
-  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$1-$scale-$core.sjob
-  echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$1-$scale-$core.sjob
-  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$1-$scale-$core.sjob
-  echo "cd $hplbinpathvar/$1/$scale/$core"  >> hpl-$1-$scale-$core.sjob
-  echo "mpirun -n $core ./xhpl"  >> hpl-$1-$scale-$core.sjob
+  touch hpl-$scale-$1-$core.sjob
+  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$scale-$1-$core.sjob
+  echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$scale-$1-$core.sjob
+  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$scale-$1-$core.sjob
+  echo "cd $hplbinpathvar/$1/$scale/$core"  >> hpl-$scale-$1-$core.sjob
+  echo "mpirun -n $core ./xhpl"  >> hpl-$scale-$1-$core.sjob
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
-export 1=$(grep -Eowi 'single|many' <<< "$*")
+export nodes=$(grep -Eowi 'single|many' <<< "$*")
 export ns=$(grep -Eiw Ns=* <<< "$*")
 export ns=$(echo $ns | sed 's/^\(Ns=\)*//')
 
-if [[ "$1" == "many" ]]; then
+if [[ "$nodes" == "many" ]]; then
   export coreset=$(grep -Ewi cores= <<< "$*")
   coreset=$(echo $core | sed 's/^\(cores=\)*//')
 fi
@@ -54,7 +54,7 @@ elif [[ ! -z "$hplbinpathread" ]]; then
   export hplbinpathvar=$hplbinpathread
 fi
 
-if [[ "$1" == "single" ]]; then
+if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
 for core in $cores; do
   create_hpl
