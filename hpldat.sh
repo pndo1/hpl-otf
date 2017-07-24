@@ -25,8 +25,8 @@ export ns=$(grep -Eiw Ns=* <<< "$*")
 export ns=$(echo $ns | sed 's/^\(Ns=\)*//')
 
 if [[ "$nodes" == "many" ]]; then
-  export core=$(grep -Ewi cores= <<< "$*")
-  core=$(echo $core | sed 's/^\(cores=\)*//')
+  export coreset=$(grep -Ewi cores= <<< "$*")
+  coreset=$(echo $core | sed 's/^\(cores=\)*//')
 fi
 
 echo "Please input HPL build folder or use variable [$HPLPATH]:"
@@ -46,5 +46,30 @@ fi
 
 if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
-
 fi
+for core in $cores; do
+  create_hpl
+  cd $nodes/$scale/$core
+  if [[ "$core" == "1" ]]; then
+    sed -i '9s/.*/1/' HPL.dat
+    sed -i '10s/.*/1/' HPL.dat
+  elif [[ "$core" == "2" ]]; then
+    sed -i '9s/.*/2/' HPL.dat
+    sed -i '10s/.*/1/' HPL.dat
+  elif [[ "$core" == "4" ]]; then
+    sed -i '9s/.*/2/' HPL.dat
+    sed -i '10s/.*/2/' HPL.dat
+  elif [[ "$core" == "6" ]]; then
+    sed -i '9s/.*/3/' HPL.dat
+    sed -i '10s/.*/2/' HPL.dat
+  elif [[ "$core" == "12" ]]; then
+    sed -i '9s/.*/4/' HPL.dat
+    sed -i '10s/.*/3/' HPL.dat
+  elif [[ "$core" == "24" ]]; then
+    sed -i '9s/.*/6/' HPL.dat
+    sed -i '10s/.*/4/' HPL.dat
+  elif [[ "$core" == "48" ]]; then
+    sed -i '9s/.*/8/' HPL.dat
+    sed -i '10s/.*/6/' HPL.dat
+  fi
+done
