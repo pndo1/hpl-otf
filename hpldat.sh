@@ -23,11 +23,11 @@ create_sjob () {
   if [[ ! -d "scripts" ]]; then
     mkdir scripts
   fi
-  if [[ ! -d "$nodes" ]]; then
-    mkdir $nodes
+  if [[ ! -d "scripts/$nodes" ]]; then
+    mkdir scripts/$nodes
   fi
-  if [[ ! -d "$scale" ]]; then
-    mkdir $scale
+  if [[ ! -d "scripts/$nodes/$scale" ]]; then
+    mkdir scripts/$nodes/$scale
   fi
   cd scripts/$nodes/$scale
   touch hpl-$core.sjob
