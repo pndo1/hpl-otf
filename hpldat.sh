@@ -59,6 +59,8 @@ if [[ "$nodes" == "single" ]]; then
 for core in $cores; do
   create_hpl
   cd $hplfolder/$nodes/$scale
+  echo $(pwd)
+  echo $hplfolder $core
   mv $hplfolder $core
   cd $core
   if [[ "$core" == "1" ]]; then
