@@ -7,23 +7,34 @@ cd $hplpathvar/..
 hplfolder=$(ls | grep -i intel)
 cp -r $hplfolder $hplbinpathvar
 cd $hplbinpathvar/
-if [[ ! -d "$nodes" ]]; then
-  mkdir $nodes
+if [[ ! -d "$1" ]]; then
+  mkdir $1
 fi
-if [[ ! -d "$nodes/$scale" ]]; then
-  mkdir $nodes/$scale
+if [[ ! -d "$1/$scale" ]]; then
+  mkdir $1/$scale
 fi
-mv $hplfolder $nodes/$scale
-cd $hplfolder $nodes/$scale
-mv $hplfolder $core
+mv $hplfolder $1/$scale
+}
+create_sjob () {
+  cd $hplbinpathvar
+  if [[ ! -d "$scripts" ]]; then
+    mkdir $scripts
+  fi
+  cd scripts
+  touch hpl-$1-$scale-$core.sjob
+  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$1-$scale-$core.sjob
+  echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$1-$scale-$core.sjob
+  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$1-$scale-$core.sjob
+  echo "cd $hplbinpathvar/$1/$scale/$core"  >> hpl-$1-$scale-$core.sjob
+  echo "mpirun -n $core ./xhpl"  >> hpl-$1-$scale-$core.sjob
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
-export nodes=$(grep -Eowi 'single|many' <<< "$*")
+export 1=$(grep -Eowi 'single|many' <<< "$*")
 export ns=$(grep -Eiw Ns=* <<< "$*")
 export ns=$(echo $ns | sed 's/^\(Ns=\)*//')
 
-if [[ "$nodes" == "many" ]]; then
+if [[ "$1" == "many" ]]; then
   export coreset=$(grep -Ewi cores= <<< "$*")
   coreset=$(echo $core | sed 's/^\(cores=\)*//')
 fi
@@ -43,11 +54,13 @@ elif [[ ! -z "$hplbinpathread" ]]; then
   export hplbinpathvar=$hplbinpathread
 fi
 
-if [[ "$nodes" == "single" ]]; then
+if [[ "$1" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
 for core in $cores; do
   create_hpl
-  cd $nodes/$scale/$core
+  cd $hplfolder $1/$scale
+  mv $hplfolder $core
+  cd $core
   if [[ "$core" == "1" ]]; then
     sed -i '9s/.*/1/' HPL.dat
     sed -i '10s/.*/1/' HPL.dat
@@ -72,12 +85,6 @@ for core in $cores; do
   fi
 done
 for core in $cores; do
- cd $hplbinpathvar
- touch hpl-$nodes-$scale-$core.sjob
- echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N1 -n$core\n#SBATCH --profile=all" >> hpl-$nodes-$scale-$core.sjob
- echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$nodes-$scale-$core.sjob
- echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"
- echo "cd $hplbinpathvar/$nodes/$scale/$core"
- mpirun -n $core ./xhpl
+ create_sjob 1
 done
 fi
