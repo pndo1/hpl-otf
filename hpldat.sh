@@ -13,10 +13,9 @@ fi
 if [[ ! -d "$nodes/$scale" ]]; then
   mkdir $nodes/$scale
 fi
-if [[ ! -d "$nodes/$scale/$core" ]]; then
-  mkdir $nodes/$scale/$core
-fi
-mv $hplfolder $nodes/$scale/$core
+mv $hplfolder $nodes/$scale
+cd $hplfolder $nodes/$scale
+mv $hplfolder $core
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
@@ -46,7 +45,6 @@ fi
 
 if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
-fi
 for core in $cores; do
   create_hpl
   cd $nodes/$scale/$core
@@ -73,3 +71,13 @@ for core in $cores; do
     sed -i '10s/.*/6/' HPL.dat
   fi
 done
+for core in $cores; do
+ cd $hplbinpathvar
+ touch hpl-$nodes-$scale-$core.sjob
+ echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N1 -n$core\n#SBATCH --profile=all" >> hpl-$nodes-$scale-$core.sjob
+ echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$nodes-$scale-$core.sjob
+ echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"
+ echo "cd $hplbinpathvar/$nodes/$scale/$core"
+ mpirun -n $core ./xhpl
+done
+fi
