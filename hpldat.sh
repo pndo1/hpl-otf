@@ -5,15 +5,18 @@ echo "Ryan's fancy script to scale HPL.dat on the fly"
 create_hpl () {
 cd $hplpathvar/..
 hplfolder=$(ls | grep -i intel)
-cp -r $hplfolder $hplbinpathvar
-cd $hplbinpathvar/
-if [[ ! -d "$nodes" ]]; then
-  mkdir $nodes
+if [[ ! -d "$hplbinpathvar/$nodes" ]]; then
+  mkdir $hplbinpathvar/$nodes
 fi
-if [[ ! -d "$nodes/$scale" ]]; then
-  mkdir $nodes/$scale
+if [[ ! -d "$hplbinpathvar/$nodes/$scale" ]]; then
+  mkdir $hplbinpathvar/$nodes/$scale
 fi
-mv $hplfolder $nodes/$scale
+cp -r $hplfolder $hplbinpathvar/$nodes/$scale
+cd $hplbinpathvar/$nodes/$scale
+echo $(pwd)
+echo $hplfolder $core
+mv $hplfolder $core
+cd $core
 }
 create_sjob () {
   cd $hplbinpathvar
@@ -58,11 +61,7 @@ if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
 for core in $cores; do
   create_hpl
-  cd $hplfolder/$nodes/$scale
-  echo $(pwd)
-  echo $hplfolder $core
-  mv $hplfolder $core
-  cd $core
+
   if [[ "$core" == "1" ]]; then
     sed -i '9s/.*/1/' HPL.dat
     sed -i '10s/.*/1/' HPL.dat
