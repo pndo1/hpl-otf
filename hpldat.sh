@@ -58,7 +58,7 @@ if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 48'
 for core in $cores; do
   create_hpl
-  cd $hplfolder $nodes/$scale
+  cd $hplfolder/$nodes/$scale
   mv $hplfolder $core
   cd $core
   if [[ "$core" == "1" ]]; then
