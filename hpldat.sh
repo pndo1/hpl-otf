@@ -86,26 +86,26 @@ for core in $cores; do
   create_hpl
 
   if [[ "$core" == "1" ]]; then
-    sed -i '9s/.*/1/' HPL.dat
-    sed -i '10s/.*/1/' HPL.dat
+    sed -i '11s/.*/1/' HPL.dat
+    sed -i '12s/.*/1/' HPL.dat
   elif [[ "$core" == "2" ]]; then
-    sed -i '9s/.*/2/' HPL.dat
-    sed -i '10s/.*/1/' HPL.dat
+    sed -i '11s/.*/2/' HPL.dat
+    sed -i '12s/.*/1/' HPL.dat
   elif [[ "$core" == "4" ]]; then
-    sed -i '9s/.*/2/' HPL.dat
-    sed -i '10s/.*/2/' HPL.dat
+    sed -i '11s/.*/2/' HPL.dat
+    sed -i '12s/.*/2/' HPL.dat
   elif [[ "$core" == "6" ]]; then
-    sed -i '9s/.*/3/' HPL.dat
-    sed -i '10s/.*/2/' HPL.dat
+    sed -i '11s/.*/3/' HPL.dat
+    sed -i '12s/.*/2/' HPL.dat
   elif [[ "$core" == "12" ]]; then
-    sed -i '9s/.*/4/' HPL.dat
-    sed -i '10s/.*/3/' HPL.dat
+    sed -i '11s/.*/4/' HPL.dat
+    sed -i '12s/.*/3/' HPL.dat
   elif [[ "$core" == "24" ]]; then
-    sed -i '9s/.*/6/' HPL.dat
-    sed -i '10s/.*/4/' HPL.dat
+    sed -i '11s/.*/6/' HPL.dat
+    sed -i '12s/.*/4/' HPL.dat
   elif [[ "$core" == "48" ]]; then
-    sed -i '9s/.*/8/' HPL.dat
-    sed -i '10s/.*/6/' HPL.dat
+    sed -i '11s/.*/8/' HPL.dat
+    sed -i '12s/.*/6/' HPL.dat
   fi
 done
 for core in $cores; do
