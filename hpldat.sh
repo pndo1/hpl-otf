@@ -76,7 +76,7 @@ create_sjob () {
   echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
   echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$core.sjob
   echo "export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so" >> hpl-$core.sjob
-  echo "mpirun -n $core ./xhpl"  >> hpl-$core.sjob
+  echo "srun ./xhpl"  >> hpl-$core.sjob
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
