@@ -122,8 +122,8 @@ for core in $cores; do
 done
 fi
 if [[ "$nodes" == "many" ]]; then
-  export nodes='1 2 4 8 16'
-for node in $nodes; do
+  export nodenum='1 2 4 8 16'
+for node in $nodenum; do
   create_hpl
   edit_hpldat $coreset
 done
