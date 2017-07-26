@@ -76,6 +76,8 @@ create_sjob () {
   echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
   echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$core.sjob
   echo "mpirun ./xhpl"  >> hpl-$core.sjob
+  echo 'cd /soft/slurm/monitoring/$USER/'
+  echo 'sh5util -j $SLURM_JOB_ID'
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
