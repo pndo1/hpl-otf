@@ -13,9 +13,9 @@ fi
 cp -r $hplfolder $hplbinpathvar/$nodes/$scale
 cd $hplbinpathvar/$nodes/$scale
 echo $(pwd)
-echo $hplfolder $core
-mv $hplfolder $core
-cd $core
+echo $hplfolder $1
+mv $hplfolder $1
+cd $1
 }
 edit_hpldat () {
   corex=$1
@@ -69,13 +69,13 @@ create_sjob () {
     mkdir results/$nodes/$scale
   fi
   cd scripts/$nodes/$scale
-  touch hpl-$core.sjob
-  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=energy,task" >> hpl-$core.sjob
-  echo "#SBATCH -o $hplbinpathvar/results/$nodes/$scale/hpl-$core-'%j'.out" >> hpl-$core.sjob
-  echo 'export MODULEPATH=$MODULEPATH:/soft/modules' >> hpl-$core.sjob
-  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
-  echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$core.sjob
-  echo "mpirun ./xhpl"  >> hpl-$core.sjob
+  touch hpl-$1.sjob
+  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=energy,task" >> hpl-$1.sjob
+  echo "#SBATCH -o $hplbinpathvar/results/$nodes/$scale/hpl-$1-'%j'.out" >> hpl-$1.sjob
+  echo 'export MODULEPATH=$MODULEPATH:/soft/modules' >> hpl-$1.sjob
+  echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$1.sjob
+  echo "cd $hplbinpathvar/$nodes/$scale/$1"  >> hpl-$1.sjob
+  echo "mpirun ./xhpl"  >> hpl-$1.sjob
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
@@ -114,7 +114,7 @@ fi
 if [[ "$nodes" == "single" ]]; then
   export cores='1 2 4 6 12 24 36 48'
 for core in $cores; do
-  create_hpl
+  create_hpl $core
   edit_hpldat $core
 done
 for core in $cores; do
@@ -124,7 +124,7 @@ fi
 if [[ "$nodes" == "many" ]]; then
   export nodenum='1 2 4 8 16'
 for node in $nodenum; do
-  create_hpl
+  create_hpl $node
   edit_hpldat $coreset
 done
 for node in $nodes; do
