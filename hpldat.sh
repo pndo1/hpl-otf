@@ -72,11 +72,10 @@ create_sjob () {
   touch hpl-$core.sjob
   echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$core.sjob
   echo "#SBATCH -o $hplbinpathvar/results/$nodes/$scale/hpl-$core-'%j'.out" >> hpl-$core.sjob
-  echo "export MODULEPATH=$MODULEPATH:/soft/modules" >> hpl-$core.sjob
+  echo 'export MODULEPATH=$MODULEPATH:/soft/modules' >> hpl-$core.sjob
   echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
   echo "cd $hplbinpathvar/$nodes/$scale/$core"  >> hpl-$core.sjob
-  echo "export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so" >> hpl-$core.sjob
-  echo "srun ./xhpl"  >> hpl-$core.sjob
+  echo "mpirun ./xhpl"  >> hpl-$core.sjob
 }
 
 export scale=$(grep -Eowi 'weak|strong' <<< "$*")
