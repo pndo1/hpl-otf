@@ -19,9 +19,12 @@ cd $1
 }
 edit_hpldat () {
   corex=$1
-  if [[ -n "$ns" ]]; then
-    sed -i '6s/.*/'$ns'/' HPL.dat
-  fi
+  nodex=$2
+
+  if [[ "$nodes" =="single" ]]; then
+    if [[ -n "$ns" ]]; then
+      sed -i '6s/.*/'$ns'/' HPL.dat
+    fi
   if [[ "$corex" == "1" ]]; then
     sed -i '11s/.*/1/' HPL.dat
     sed -i '12s/.*/1/' HPL.dat
@@ -47,6 +50,31 @@ edit_hpldat () {
     sed -i '11s/.*/6/' HPL.dat
     sed -i '12s/.*/8/' HPL.dat
   fi
+fi
+if [[ "$nodes" =="many" ]]; then
+if [[ "$nodex" == "1" ]]; then
+  sed -i '6s/.*/'120000'/' HPL.dat
+  sed -i '11s/.*/4/' HPL.dat
+  sed -i '12s/.*/6/' HPL.dat
+elif [[ "$nodex" == "2" ]]; then
+  sed -i '6s/.*/'157000'/' HPL.dat
+  sed -i '11s/.*/6/' HPL.dat
+  sed -i '12s/.*/8/' HPL.dat
+elif [[ "$nodex" == "4" ]]; then
+  sed -i '6s/.*/'223000'/' HPL.dat
+  sed -i '11s/.*/8/' HPL.dat
+  sed -i '12s/.*/12/' HPL.dat
+elif [[ "$nodex" == "8" ]]; then
+  sed -i '6s/.*/'315000'/' HPL.dat
+  sed -i '11s/.*/14/' HPL.dat
+  sed -i '12s/.*/14/' HPL.dat
+elif [[ "$nodex" == "16" ]]; then
+  sed -i '6s/.*/'445000'/' HPL.dat
+  sed -i '11s/.*/16/' HPL.dat
+  sed -i '12s/.*/24/' HPL.dat
+fi
+fi
+
 }
 create_sjob () {
   cd $hplbinpathvar
@@ -125,9 +153,9 @@ if [[ "$nodes" == "many" ]]; then
   export nodenum='1 2 4 8 16'
 for node in $nodenum; do
   create_hpl $node
-  edit_hpldat $coreset
+  edit_hpldat $coreset $node
 done
-for node in $nodes; do
+for node in $nodenum; do
  core=$coreset
  create_sjob $node
 done
