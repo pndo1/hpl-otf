@@ -51,7 +51,7 @@ edit_hpldat () {
     sed -i '12s/.*/8/' HPL.dat
   fi
 fi
-if [[ "$nodes" =="many" ]]; then
+if [[ "$nodes" == "many" ]]; then
 if [[ "$nodex" == "1" ]]; then
   sed -i '6s/.*/'120000'/' HPL.dat
   sed -i '11s/.*/4/' HPL.dat
