@@ -70,7 +70,7 @@ create_sjob () {
   fi
   cd scripts/$nodes/$scale
   touch hpl-$core.sjob
-  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=all" >> hpl-$core.sjob
+  echo -e "#!/bin/bash\n#SBATCH -p pinnacle\n#SBATCH -t 12:00\n#SBATCH -N$1 -n$core\n#SBATCH --profile=energy,task" >> hpl-$core.sjob
   echo "#SBATCH -o $hplbinpathvar/results/$nodes/$scale/hpl-$core-'%j'.out" >> hpl-$core.sjob
   echo 'export MODULEPATH=$MODULEPATH:/soft/modules' >> hpl-$core.sjob
   echo -e "module load compilers/intel\nmodule load blas/intel-mkl\nmodule load mpi/intel"  >> hpl-$core.sjob
